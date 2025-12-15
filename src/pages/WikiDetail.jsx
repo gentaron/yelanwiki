@@ -2,23 +2,22 @@ import React from 'react';
 import Layout from '../components/Layout';
 import { useParams, Link } from 'react-router-dom';
 import wikiData from '../data/wiki-data.json';
-import { ArrowLeft, MessageSquare, info } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 
 const WikiDetail = () => {
     const { name } = useParams();
     const term = wikiData.terms.find(t => t.name === name);
 
-    if (!term) return (
-        <Layout>
-            <div className="flex h-full items-center justify-center">
-                <div className="text-center space-y-4">
-                    <h1 className="text-3xl text-red-400 font-bold">404: File Not Found</h1>
-                    <Link to="/" className="text-slate-400 hover:text-white underline">Return to Dashboard</Link>
+    if (!term) {
+        return (
+            <Layout>
+                <div className="p-8">
+                    <h1 className="text-2xl text-red-600">ページが見つかりません</h1>
+                    <Link to="/" className="text-wiki-link hover:underline mt-4 block">メインページに戻る</Link>
                 </div>
-            </div>
-        </Layout>
-    );
+            </Layout>
+        );
+    }
 
     const snippets = term.mentions.slice(0, 15).map(lineNum => {
         const lineIndex = lineNum - 1;
@@ -29,110 +28,85 @@ const WikiDetail = () => {
 
     return (
         <Layout>
-            <div className="relative min-h-full">
-                {/* Header Background */}
-                <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-slate-900 to-transparent z-0 pointer-events-none" />
+            <div className="p-8 max-w-5xl">
+                <Link
+                    to={term.type === 'Character' ? '/characters' : '/terms'}
+                    className="inline-flex items-center text-wiki-link hover:underline mb-4 text-sm"
+                >
+                    <ArrowLeft size={16} className="mr-1" />
+                    {term.type === 'Character' ? '登場人物一覧' : '用語集'}に戻る
+                </Link>
 
-                <div className="p-8 lg:p-12 max-w-6xl mx-auto relative z-10 w-full">
-                    <Link to={term.type === 'Character' ? '/characters' : '/terms'} className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors group">
-                        <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
-                        Back to {term.type === 'Character' ? 'Database' : 'Index'}
-                    </Link>
+                <h1 className="text-4xl font-bold border-b-2 border-wiki-border pb-3 mb-6 text-wiki-text">
+                    {term.name}
+                </h1>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                        {/* Main Info */}
-                        <div className="lg:col-span-8">
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                                <span className="inline-block px-3 py-1 mb-4 rounded-full bg-yelan-primary/20 border border-yelan-primary/30 text-yelan-glow text-xs font-bold uppercase tracking-widest shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                                    {term.type} / CLASS-S
-                                </span>
-                                <h1 className="text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-xl">{term.name}</h1>
+                <div className="flex gap-8">
+                    {/* Main Content */}
+                    <div className="flex-1">
+                        <div className="mb-8 p-6 bg-wiki-bgAlt border border-wiki-borderLight rounded">
+                            <p className="text-wiki-text leading-relaxed">
+                                {term.description}
+                            </p>
+                        </div>
 
-                                <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-12 shadow-2xl">
-                                    <p className="text-xl text-slate-300 leading-relaxed font-light">
-                                        {term.description}
+                        <h2 className="text-2xl font-bold border-b border-wiki-border pb-2 mb-4 text-wiki-text">
+                            本文中の出現
+                        </h2>
+
+                        <div className="space-y-4">
+                            {snippets.map((snippet, idx) => (
+                                <div
+                                    key={idx}
+                                    className="p-4 bg-gray-50 border-l-4 border-wiki-link rounded-r"
+                                >
+                                    <div className="text-xs text-wiki-textLight mb-2 font-mono">
+                                        {snippet.lineNum}行目
+                                    </div>
+                                    <p className="text-wiki-text leading-relaxed">
+                                        {snippet.parts.map((part, i) => (
+                                            <React.Fragment key={i}>
+                                                {part}
+                                                {i < snippet.parts.length - 1 && (
+                                                    <span className="bg-yellow-200 font-medium px-0.5">
+                                                        {term.name}
+                                                    </span>
+                                                )}
+                                            </React.Fragment>
+                                        ))}
                                     </p>
                                 </div>
-
-                                <div className="mb-8 flex items-center gap-4">
-                                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                                        <MessageSquare className="text-yelan-accent" />
-                                        Key Mentions
-                                    </h2>
-                                    <div className="h-px flex-1 bg-white/10"></div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {snippets.map((snippet, idx) => (
-                                        <motion.div
-                                            key={idx}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: idx * 0.05 }}
-                                            className="group bg-slate-900/30 hover:bg-slate-800/50 border border-white/5 hover:border-yelan-primary/30 p-5 rounded-xl transition-all duration-200"
-                                        >
-                                            <div className="flex items-start gap-4">
-                                                <span className="text-xs text-slate-500 font-mono pt-1 min-w-[3rem]">L-{snippet.lineNum}</span>
-                                                <p className="text-slate-300 leading-relaxed">
-                                                    {snippet.parts.map((part, i) => (
-                                                        <React.Fragment key={i}>
-                                                            {part}
-                                                            {i < snippet.parts.length - 1 && (
-                                                                <span className="bg-yelan-primary/20 text-yelan-glow px-1 rounded font-medium border border-yelan-primary/20">
-                                                                    {term.name}
-                                                                </span>
-                                                            )}
-                                                        </React.Fragment>
-                                                    ))}
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    ))}
-                                    {term.mentions.length > 15 && (
-                                        <div className="text-center py-8">
-                                            <span className="text-slate-500 italic">...total {term.mentions.length} mentions found in archive.</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </motion.div>
-                        </div>
-
-                        {/* Sidebar Stats */}
-                        <div className="lg:col-span-4 space-y-6">
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="sticky top-8 space-y-6"
-                            >
-                                <div className="bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-2xl">
-                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Analysis Data</h3>
-
-                                    <div className="space-y-4">
-                                        <div>
-                                            <div className="text-sm text-slate-500 mb-1">Occurrence Count</div>
-                                            <div className="text-3xl font-bold text-white font-mono">{term.count}</div>
-                                        </div>
-
-                                        <div>
-                                            <div className="text-sm text-slate-500 mb-1">First Detected</div>
-                                            <div className="text-lg text-slate-300 font-mono">Line {term.mentions[0]}</div>
-                                        </div>
-
-                                        <div>
-                                            <div className="text-sm text-slate-500 mb-1">Relevance Score</div>
-                                            <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-1">
-                                                <div
-                                                    className="bg-gradient-to-r from-yelan-primary to-yelan-accent h-full rounded-full"
-                                                    style={{ width: `${Math.min(100, Math.max(5, (term.count / 400) * 100))}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
+                            ))}
+                            {term.mentions.length > 15 && (
+                                <p className="text-center text-wiki-textLight italic text-sm py-4">
+                                    ... 他 {term.mentions.length - 15} 件の出現があります
+                                </p>
+                            )}
                         </div>
                     </div>
+
+                    {/* Sidebar */}
+                    <aside className="w-64 flex-shrink-0">
+                        <div className="bg-wiki-bgAlt border border-wiki-borderLight rounded p-4 sticky top-4">
+                            <h3 className="font-bold text-sm mb-3 pb-2 border-b border-wiki-borderLight text-wiki-text">
+                                統計情報
+                            </h3>
+                            <dl className="space-y-3 text-sm">
+                                <div>
+                                    <dt className="text-wiki-textLight mb-1">出現回数</dt>
+                                    <dd className="font-bold text-2xl text-wiki-text">{term.count}</dd>
+                                </div>
+                                <div>
+                                    <dt className="text-wiki-textLight mb-1">初出</dt>
+                                    <dd className="font-mono text-wiki-text">{term.mentions[0]}行目</dd>
+                                </div>
+                                <div>
+                                    <dt className="text-wiki-textLight mb-1">カテゴリ</dt>
+                                    <dd className="text-wiki-text">{term.type === 'Character' ? '登場人物' : '用語'}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </Layout>

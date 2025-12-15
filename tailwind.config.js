@@ -7,18 +7,22 @@ export default {
     theme: {
         extend: {
             colors: {
-                yelan: {
-                    dark: '#0a0f1c', // Very dark blue/black background
-                    primary: '#1e3a8a', // Deep blue
-                    accent: '#3b82f6', // Bright blue
-                    glow: '#60a5fa', // Glowing blue
-                    text: '#e2e8f0', // Light gray text
-                    muted: '#64748b', // Muted text
+                wiki: {
+                    bg: '#ffffff',
+                    bgAlt: '#f8f9fa',
+                    border: '#a2a9b1',
+                    borderLight: '#c8ccd1',
+                    text: '#202122',
+                    textLight: '#54595d',
+                    link: '#0645ad',
+                    linkVisited: '#0b0080',
+                    linkHover: '#0b0080',
+                    sidebar: '#f6f6f6',
                 }
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                serif: ['Merriweather', 'serif'], // For story text
+                sans: ['Noto Sans JP', 'sans-serif'],
+                serif: ['Noto Serif JP', 'serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

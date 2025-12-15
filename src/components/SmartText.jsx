@@ -28,7 +28,7 @@ const SmartText = ({ text }) => {
                                 <Link
                                     key={`${lineIdx}-${term.name}-${i}`}
                                     to={linkPath}
-                                    className="text-yelan-glow hover:text-yelan-accent hover:underline font-medium mx-0.5"
+                                    className="text-wiki-link hover:underline visited:text-wiki-linkVisited"
                                 >
                                     {term.name}
                                 </Link>
